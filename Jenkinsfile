@@ -47,6 +47,7 @@ pipeline {
 			}
 			steps {
 				sh "wget http://jmaster.crypby.com/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar"
+				sh "cat /ets/issue ; uname -a"
 				sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 5"
 			}
 		}
