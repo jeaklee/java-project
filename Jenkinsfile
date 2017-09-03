@@ -41,5 +41,15 @@ pipeline {
 			}
 		}
 
+		stage('Testing in Debian Docker container') {
+			agent {
+				docker 'openjdk:8u141-jre'
+			}
+			steps {
+				sh "wget http://jmaster.crypby.com/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar"
+				sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 5"
+			}
+		}
+
 	}
 }
