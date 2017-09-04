@@ -30,13 +30,14 @@ pipeline {
 		stage('deploy') {
 			agent { label 'apache' }
 			steps {
-				sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/"
+				sh "mkdir /var/www/html/rectangles/all/${env.BRANCH_NAME}"
+				sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/${env.BRANCH_NAME}"
 			}
 		}
 		stage('Testing in CentOS') {
 			agent { label 'CentOS' }
 			steps {
-				sh "wget http://jmaster.crypby.com/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar"
+				sh "wget http://jmaster.crypby.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar"
 				sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
 			}
 		}
@@ -46,7 +47,7 @@ pipeline {
 				docker 'openjdk:8u141-jre'
 			}
 			steps {
-				sh "wget http://jmaster.crypby.com/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar"
+				sh "wget http://jmaster.crypby.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar"
 				sh "cat /etc/issue ; uname -a"
 				sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 5"
 			}
@@ -55,11 +56,30 @@ pipeline {
 		stage('Promote to Green Status') {
 			agent { label 'apache' }
 			when {
-				branch 'development'
+				branch 'master'
 			}
 			steps {
 				sh "cp /var/www/html/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/"
 			}
+		}
+
+		stage('Promote development branch to master')
+		agent { labe 'apache' }
+
+		when {
+			branch 'development'
+		}
+		steps {
+			echo "Stashing local changes"
+			sh 'git stash'
+			echo 'Checking out development branch'
+			sh 'git checkout development'
+			echo 'Checking out master branch'
+			sh 'git checkout master'
+			echp 'Merge dev into master'
+			sh 'git merge development'
+			echo 'Pushing to Origin Master'
+			sh 'git push origin master'
 		}
 
 	}
