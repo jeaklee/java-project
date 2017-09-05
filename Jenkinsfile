@@ -63,7 +63,7 @@ pipeline {
 			}
 		}
 
-		stage('Promote development branch to master')
+		stage('Promote development branch to master') {
 		agent { labe 'apache' }
 
 		when {
@@ -81,6 +81,6 @@ pipeline {
 			echo 'Pushing to Origin Master'
 			sh 'git push origin master'
 		}
-
+	}
 	}
 }
