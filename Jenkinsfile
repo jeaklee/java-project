@@ -81,6 +81,7 @@ MAJOR_VERSION = 1
 			echo 'Checking out development branch'
 			sh 'git checkout development'
 			echo 'Checking out master branch'
+			sh 'git pull origin'
 			sh 'git checkout master'
 			echo 'Merge dev into master'
 			sh 'git merge development'
