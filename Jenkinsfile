@@ -1,6 +1,12 @@
 pipeline {
 	agent none
 
+	environment {
+MAJOR_VERSION = 1
+	}
+
+
+
 	options {
 		buildDiscarder(logRotator(numToKeepStr: '2', artifactNumToKeepStr: '1'))
 	}
@@ -31,14 +37,14 @@ pipeline {
 			agent { label 'apache' }
 			steps {
 				sh "mkdir -p /var/www/html/rectangles/all/${env.BRANCH_NAME}"
-				sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/${env.BRANCH_NAME}/"
+				sh "cp dist/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/${env.BRANCH_NAME}/"
 			}
 		}
 		stage('Testing in CentOS') {
 			agent { label 'CentOS' }
 			steps {
-				sh "wget http://jmaster.crypby.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar"
-				sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
+				sh "wget http://jmaster.crypby.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar"
+				sh "java -jar rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar 3 4"
 			}
 		}
 
@@ -47,9 +53,9 @@ pipeline {
 				docker 'openjdk:8u141-jre'
 			}
 			steps {
-				sh "wget http://jmaster.crypby.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar"
+				sh "wget http://jmaster.crypby.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar"
 				sh "cat /etc/issue ; uname -a"
-				sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 5"
+				sh "java -jar rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar 3 5"
 			}
 		}
 
@@ -59,7 +65,7 @@ pipeline {
 				branch 'master'
 			}
 			steps {
-				sh "cp /var/www/html/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/"
+				sh "cp /var/www/html/rectangles/all/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/"
 			}
 		}
 
@@ -80,6 +86,9 @@ pipeline {
 			sh 'git merge development'
 			echo 'Pushing to Origin Master'
 			sh 'git push origin master'
+			echo 'Tagging a release'
+			sh 'git tag rectangle-${env.MAJOR_VERSION}.${env.BUILD_NUMBER}'
+			sh 'git push origin rectangle-${env.MAJOR_VERSION}.${env.BUILD_NUMBER}'
 		}
 	}
 	}
