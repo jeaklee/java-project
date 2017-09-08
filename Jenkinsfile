@@ -31,7 +31,7 @@ MAJOR_VERSION = 1
 					def myLib = new linuxacademy.git.gitStuff();
 
 					echo "My commit: ${myLib.gitCommit("${env.WORKSPACE}/.git")}"
-
+					echo "boo"
 				}
 			}
 		}
