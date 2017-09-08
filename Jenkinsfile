@@ -30,7 +30,7 @@ MAJOR_VERSION = 1
 				script {
 					def myLib = new linuxacademy.git.gitStuff();
 
-					echo "My commit: ${myLib.gitCommit("${env.WORKSPACE}/.git")}"
+					echo "My commit: ${myLib.=gitCommit("${env.WORKSPACE}/.git")}"
 
 				}
 			}
