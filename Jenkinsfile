@@ -21,6 +21,21 @@ MAJOR_VERSION = 1
 			}
 		}
 
+		stage('Git Info') {
+			agent any
+
+			steps {
+				echo "My branch name: ${env.BRANCH_NAME}"
+
+				script {
+					def myLib = new linuxacademy.git.gitStuff();
+
+					echo "My commit: ${myLib.gitCommit("${env.WORKSPACE}/.git")}"
+
+				}
+			}
+		}
+
 
 		stage('Unit Tests') {
 			agent { label 'apache' }
